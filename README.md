@@ -1,5 +1,8 @@
 Project Title: IoT Smart Traffic Light Management System
-Objective
+
+
+----
+##Objective
 To develop an intelligent, IoT-based traffic management system that optimizes urban traffic flow and enhances road safety. The system uses real-time vehicle detection to dynamically adjust traffic light timings, aiming to reduce congestion and improve efficiency at intersections.
 --
 ##Tools & Technologies
