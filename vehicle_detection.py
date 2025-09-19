@@ -1,24 +1,41 @@
-import numpy as np
 import cv2
-# Loads the data as a VideoCapture format, which is really just
-# an image sequence.
-image_sequence = 'Delhi.mp4'
-cap = cv2.VideoCapture(image_sequence)
-# Load our cascade classifier from cars3.xml
-car_cascade = cv2.CascadeClassifier(r'/home/aman/opncv_tutorials/cars3.xml')
-# Reduce frame number of tests.
-number_of_frames_to_load = 500
-for frame_id in xrange(number_of_frames_to_load):
-    ret, image = cap.read()
-    # Crop so that only the roads remain, eliminates the distraction.
-    image=image[120:,:-20]
-     #Use Cascade Classifier to detect cars, may have to tune the
-     #parameters for less false positives.
-    cars = car_cascade.detectMultiScale(image, 1.008, 5)
-    for (x,y,w,h) in cars:
-        cv2.rectangle(image,(x,y),(x+w,y+h),(255,0,0),2)
-    print 'Processing %d : cars detected : [%s]' % (frame_id, len(cars))
-    cv2.imshow('frame', image)
-    cv2.waitKey(10)
+import sys
+
+# --- Load the Haar Cascade XML file ---
+cascade_path = '/home/user/IOT-BASED-SMART-TRAFFIC-LIGHT-MANAGEMENT-SYSTEM.-/cars3.xml'
+car_cascade = cv2.CascadeClassifier(cascade_path)
+
+if car_cascade.empty():
+    print(f"Error: Cannot load cascade file at {cascade_path}")
+    sys.exit()
+
+# --- Open video capture (0 for webcam, or replace with video file path) ---
+cap = cv2.VideoCapture(0)  # Change 0 to 'video.mp4' if using a file
+
+if not cap.isOpened():
+    print("Error: Cannot open video source")
+    sys.exit()
+
+while True:
+    ret, frame = cap.read()
+    if not ret:
+        print("Error: Cannot read frame from video")
+        break
+
+    # Optional: crop the frame safely
+    frame = frame[120:, :-20] if frame.shape[0] > 120 and frame.shape[1] > 20 else frame
+
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+    cars = car_cascade.detectMultiScale(gray, 1.1, 1)
+
+    for (x, y, w, h) in cars:
+        cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 0, 255), 2)
+
+    cv2.imshow('Vehicle Detection', frame)
+
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
 cap.release()
 cv2.destroyAllWindows()
